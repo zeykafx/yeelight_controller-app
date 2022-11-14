@@ -20,15 +20,11 @@ class Home extends HookWidget {
             )
                 .textColor(yeelightApi.device != null ? Colors.green : Colors.red)
                 .padding(all: 4)
-            .borderRadius(all: 8)
-                .backgroundColor(Theme.of(context).)
-            .ripple()
-                .clipRRect(all: 8)
                 .boxShadow(
                   color: yeelightApi.device != null ? Colors.green : Colors.red,
-                  blurRadius: 15,
-                  offset: const Offset(0, 11),
-                  spreadRadius: -9.7
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
+                  spreadRadius: -12
                 ),
 
             Text("LED status: ${yeelightApi.devicePower ? "On" : "Off"}, brightness: ${yeelightApi.deviceBrightness}%"),

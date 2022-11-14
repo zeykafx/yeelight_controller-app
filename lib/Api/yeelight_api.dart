@@ -13,6 +13,7 @@ class YeelightApi {
     timer = Timer.periodic(const Duration(seconds: 4), (Timer t) => getCurrentPower());
   }
 
+  /// discovers lights on the local network
   Future<void> getLights() async {
     await Yeelight.discover().then((value) {
       if (value.isNotEmpty) {
@@ -26,11 +27,13 @@ class YeelightApi {
     });
   }
 
+  /// disconnects from the connected LEDs
   void disconnect() {
     device!.disconnect();
     device = null;
   }
 
+  /// sets deviceBrightness and devicePower with the current brightness and power
   Future<void> getCurrentPower() async {
     await device?.getProps(id: 1, parameters: ["bright, power"]).then((response) {
       if (response != null && response.result![0] != "ok") {
@@ -40,6 +43,7 @@ class YeelightApi {
     });
   }
 
+  /// toggles the lights, if on -> off and vice versa
   Future<void> toggleLights() async {
     device!.toggle();
 
@@ -48,6 +52,7 @@ class YeelightApi {
     });
   }
 
+  /// starts flow mode on the connected LEDs
   Future<void> startFlow() async {
     FlowTransition transitionSpeed = const FlowTransition.sleep(duration: Duration(milliseconds: 2000));
     await device!.startFlow(

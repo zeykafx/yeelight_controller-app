@@ -28,6 +28,28 @@ class Home extends HookWidget {
                 ),
 
             Text("LED status: ${yeelightApi.devicePower ? "On" : "Off"}, brightness: ${yeelightApi.deviceBrightness}%"),
+
+            ElevatedButton(
+              onPressed: () {
+                yeelightApi.device != null ? yeelightApi.disconnect() : yeelightApi.getLights();
+              },
+              child: Text(yeelightApi.device != null ? 'Disconnect' : "Connect"),
+            ),
+
+            ElevatedButton(
+              onPressed: () {
+                yeelightApi.toggleLights();
+              },
+              child: Text(yeelightApi.devicePower ? 'Turn Off' : "Turn On"),
+            ),
+
+            ElevatedButton(
+              onPressed: () {
+                yeelightApi.startFlow();
+              },
+              child: const Text('Start flow'),
+            ),
+
             ElevatedButton(
               onPressed: () => showDialog(context: context, builder: (BuildContext context) => ColorDialog(yeelightApi: yeelightApi)),
               child: const Text("Change color & brightness"),

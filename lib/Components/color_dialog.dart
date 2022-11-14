@@ -14,7 +14,6 @@ class ColorDialog extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final pickerColor = useState<Color>(const Color(0xffff0000));
-    final currentColor = useState<Color>(const Color(0xffff0000));
     final brightnessToSet = useState<double>(100);
 
     return AlertDialog(

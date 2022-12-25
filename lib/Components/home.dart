@@ -5,12 +5,37 @@ import 'package:yeelight_controller_app/Components/color_dialog.dart';
 
 import '../Api/yeelight_api.dart';
 
-class Home extends HookWidget {
+class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
 
   @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  late YeelightApi yeelightApi;
+
+  @override
+  void initState() {
+
+    yeelightApi = YeelightApi(
+      onStateChanged: () {
+        setState(() {});
+      }
+    );
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    yeelightApi.disconnect();
+
+    super.dispose();
+  }
+
+
+  @override
   Widget build(BuildContext context) {
-    YeelightApi yeelightApi = YeelightApi();
 
     return Scaffold(
       body: Center(

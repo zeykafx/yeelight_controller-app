@@ -44,15 +44,20 @@ class YeelightApi {
 
   /// sets deviceBrightness and devicePower with the current brightness and power
   Future<void> getCurrentPower() async {
-    await device?.getProps(parameters: ["bright", "power"]).then((response) {
-      if (response != null &&
-          response.result!.first != "" &&
-          response.result![0] != "ok") {
-        deviceBrightness = int.parse(response.result![0]);
-        devicePower = response.result![1] == 'on';
-      }
-      onStateChanged();
-    });
+    try {
+      await device?.getProps(parameters: ["bright", "power"]).then((response) {
+        if (response != null &&
+            response.result!.first != "" &&
+            response.result![0] != "ok") {
+          deviceBrightness = int.parse(response.result![0]);
+          devicePower = response.result![1] == 'on';
+        }
+        onStateChanged();
+      });
+    } catch (e) {
+      print(e);
+    }
+
   }
 
   Future<Color?> getCurrentColor() async {

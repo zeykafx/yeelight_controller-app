@@ -55,6 +55,9 @@ class YeelightApi {
             response.result![0] != "ok") {
           deviceBrightness = int.parse(response.result![0]);
           devicePower = response.result![1] == 'on';
+          if (!devicePower) {
+            deviceBrightness = 0;
+          }
           isDeviceFlowing = int.parse(response.result![2]) == 1 ? true : false;
         }
         onStateChanged();

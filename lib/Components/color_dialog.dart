@@ -7,8 +7,13 @@ import 'package:yeelight_controller_app/Extensions/hex_color.dart';
 
 class ColorDialog extends StatefulWidget {
   final YeelightApi yeelightApi;
+  final void Function() onStateChanged;
 
-  const ColorDialog({Key? key, required this.yeelightApi}) : super(key: key);
+  const ColorDialog({
+    Key? key,
+    required this.yeelightApi,
+    required this.onStateChanged,
+  }) : super(key: key);
 
   @override
   State<ColorDialog> createState() => _ColorDialogState();
@@ -83,6 +88,10 @@ class _ColorDialogState extends State<ColorDialog> {
                 effect: const Effect.smooth(),
                 duration: const Duration(milliseconds: 200),
               );
+
+              // optimistically set the device brightness to provide instant feedback, this will get changed back later if it didn't work.
+              widget.yeelightApi.deviceBrightness = brightnessToSet.toInt();
+              widget.onStateChanged();
             } else {
               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                   content: Text(

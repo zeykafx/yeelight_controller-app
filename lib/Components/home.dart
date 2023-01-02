@@ -37,69 +37,155 @@ class _HomeState extends State<Home> {
         title: const Text("Yeelight LED Controller"),
       ),
       body: Center(
-          child: <Widget>[
-        // Connection status
-        Text(yeelightApi.device != null ? "Connected" : "Disconnected")
-            .textColor(yeelightApi.device != null ? Colors.green : Colors.red)
-            .padding(all: 4)
-            .boxShadow(
-                color: yeelightApi.device != null ? Colors.green : Colors.red,
-                blurRadius: 30,
-                spreadRadius: -9),
-        // Status and Brightness
-        Text(
-            "LED status: ${yeelightApi.devicePower ? "On" : "Off"}, Brightness: ${yeelightApi.deviceBrightness}%"),
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 4),
+          constraints: const BoxConstraints(maxWidth: 320),
+          child: GridView.count(
+            crossAxisCount: 2,
+            children: [
+              Card(
+                child: CustomPaint(
+                  painter: _BrightnessIndicatorPainter(
+                      brightness: yeelightApi.deviceBrightness.toDouble(),
+                      context: context),
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(8),
+                    onTap: () {
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context) => AlertDialog(
+                                title: Text(yeelightApi.device != null
+                                    ? "Disconnection"
+                                    : "Connection"),
+                                content: SingleChildScrollView(
+                                  child: Text(yeelightApi.device != null
+                                      ? "Do you want to disconnect from the currently connected LEDs?"
+                                      : "Do you want to attempt to connect to LEDs?"),
+                                ),
+                                actions: [
+                                  TextButton(
+                                      onPressed: () => Navigator.pop(context),
+                                      child: const Text(
+                                        "Cancel",
+                                      )),
+                                  TextButton(
+                                    onPressed: () async {
+                                      yeelightApi.device != null
+                                          ? yeelightApi.disconnect()
+                                          : yeelightApi.getLights();
+                                      Navigator.pop(context);
+                                    },
+                                    child: const Text("OK"),
+                                  ),
+                                ],
+                              ));
+                    },
+                    child: Center(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(yeelightApi.device != null
+                                  ? "Connected"
+                                  : "Disconnected")
+                              .textColor(yeelightApi.device != null
+                                  ? Colors.green
+                                  : Colors.red)
+                              .padding(all: 4)
+                              .boxShadow(
+                                  color: yeelightApi.device != null
+                                      ? Colors.green
+                                      : Colors.red,
+                                  blurRadius: 30,
+                                  spreadRadius: -9),
+                          // Status and Brightness
+                          Text(
+                              "LED status: ${yeelightApi.devicePower ? "On" : "Off"}"),
+                          Text("Brightness: ${yeelightApi.deviceBrightness}%"),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
 
-        // Buttons ---
-        ElevatedButton(
-          onPressed: () {
-            yeelightApi.device != null
-                ? yeelightApi.disconnect()
-                : yeelightApi.getLights();
-          },
-          child: Text(yeelightApi.device != null ? "Disconnect" : "Connect"),
-        ),
+              // Buttons ---
 
-        // turn on/off button
-        ElevatedButton(
-          onPressed: () {
-            yeelightApi.toggleLights();
-          },
-          child: Text(yeelightApi.devicePower ? "Turn Off" : "Turn On"),
-        ),
+              // turn on/off button
+              Card(
+                color: yeelightApi.devicePower
+                    ? Theme.of(context).colorScheme.secondaryContainer
+                    : null,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(8),
+                  onTap: () {
+                    yeelightApi.toggleLights();
+                  },
+                  child: Center(
+                      child: Text(
+                          yeelightApi.devicePower ? "Turn Off" : "Turn On")),
+                ),
+              ),
 
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-              onPressed: () async {
-                if (yeelightApi.isDeviceFlowing) {
-                  await yeelightApi.device!.setRGB(
-                    color: const Color(0xffff0000).toHex(),
-                    effect: const Effect.smooth(),
-                    duration: const Duration(milliseconds: 200),
-                  );
-                } else {
-                  yeelightApi.startFlow();
-                }
-              },
-              child: Text(
-                  yeelightApi.isDeviceFlowing ? "Disable Flow" : "Enable Flow"),
-            ),
-            const Padding(
-                padding: EdgeInsetsDirectional.symmetric(horizontal: 4)),
-            ElevatedButton(
-              onPressed: () => showDialog(
-                  context: context,
-                  builder: (BuildContext context) =>
-                      ColorDialog(yeelightApi: yeelightApi)),
-              child: const Text("Change Color"),
-            ),
-          ],
+              Card(
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(8),
+                  onTap: () async {
+                    if (yeelightApi.isDeviceFlowing) {
+                      await yeelightApi.device!.setRGB(
+                        color: const Color(0xffff0000).toHex(),
+                        effect: const Effect.smooth(),
+                        duration: const Duration(milliseconds: 200),
+                      );
+                    } else {
+                      yeelightApi.startFlow();
+                    }
+                  },
+                  child: Center(
+                    child: Text(yeelightApi.isDeviceFlowing
+                        ? "Disable Flow"
+                        : "Enable Flow"),
+                  ),
+                ),
+              ),
+
+              Card(
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(8),
+                  onTap: () => showDialog(
+                      context: context,
+                      builder: (BuildContext context) => ColorDialog(
+                          yeelightApi: yeelightApi,
+                          onStateChanged: () => setState(() {}))),
+                  child: const Center(child: Text("Color & Brightness")),
+                ),
+              )
+            ],
+          ),
         ),
-      ].toColumn(
-              mainAxisAlignment: MainAxisAlignment.center,
-              separator: Styled.widget().padding(vertical: 4))),
+      ),
     );
   }
+}
+
+class _BrightnessIndicatorPainter extends CustomPainter {
+  final double brightness;
+  final BuildContext context;
+  _BrightnessIndicatorPainter(
+      {required this.brightness, required this.context});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Theme.of(context).colorScheme.secondaryContainer
+      ..style = PaintingStyle.fill;
+    final width = size.width * brightness / 100;
+    canvas.drawRRect(
+        RRect.fromLTRBR(0, 0, width, size.height, const Radius.circular(8)),
+        paint);
+  }
+
+  @override
+  bool shouldRepaint(_BrightnessIndicatorPainter oldDelegate) =>
+      brightness != oldDelegate.brightness;
 }

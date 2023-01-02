@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'dart:ui';
-import 'package:yeelight_controller_app/Extensions/hex_color.dart';
 
 import 'package:yeedart/yeedart.dart';
 
 class YeelightApi {
   Device? device;
   bool devicePower = false;
+  bool isDeviceFlowing = false;
   int deviceBrightness = 1;
   late Timer timer;
 
@@ -16,9 +16,9 @@ class YeelightApi {
     required this.onStateChanged,
   }) {
     getLights();
-    getCurrentPower();
+    getCurrentStatus();
     timer = Timer.periodic(
-        const Duration(seconds: 4), (Timer t) => getCurrentPower());
+        const Duration(seconds: 4), (Timer t) => getCurrentStatus());
   }
 
   /// discovers lights on the local network
@@ -38,38 +38,39 @@ class YeelightApi {
 
   /// disconnects from the connected LEDs
   void disconnect() {
-    device!.disconnect();
+    if (device == null) {
+      device!.disconnect();
+    }
     device = null;
+    onStateChanged();
   }
 
   /// sets deviceBrightness and devicePower with the current brightness and power
-  Future<void> getCurrentPower() async {
+  Future<void> getCurrentStatus() async {
     try {
-      await device?.getProps(parameters: ["bright", "power"]).then((response) {
+      await device?.getProps(parameters: ["bright", "power", "flowing"]).then(
+          (response) {
         if (response != null &&
             response.result!.first != "" &&
             response.result![0] != "ok") {
           deviceBrightness = int.parse(response.result![0]);
           devicePower = response.result![1] == 'on';
+          isDeviceFlowing = int.parse(response.result![2]) == 1 ? true : false;
         }
         onStateChanged();
       });
-    } catch (e) {
-      print(e);
-    }
-
+    } catch (e) {}
   }
 
-  Future<Color?> getCurrentColor() async {
-    CommandResponse? response = await device?.getProps(parameters: ["rgb"]);
+  Future<Color> getCurrentColor() async {
+    try {
+      CommandResponse? response = await device?.getProps(parameters: ["rgb"]);
       if (response != null) {
-        // print(HexColor.fromHex(response.result?.first));
         Color currentColor = Color(int.parse(response.result?[0]));
-
         return currentColor;
-      } else {
-        return const Color(0xffff0000);
       }
+    } catch (e) {}
+    return const Color(0xffff0000);
   }
 
   /// toggles the lights, if on -> off and vice versa
@@ -79,7 +80,7 @@ class YeelightApi {
     devicePower = !devicePower;
     onStateChanged();
 
-    getCurrentPower();
+    getCurrentStatus();
   }
 
   /// starts flow mode on the connected LEDs

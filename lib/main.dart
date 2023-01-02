@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
           colorSchemeSeed: darkColorScheme == null ? Colors.green : null,
           brightness: Brightness.dark,
         ),
-        themeMode: ThemeMode.dark,
+        themeMode: ThemeMode.system,
         home: const SafeArea(top: true, child: Home()),
       );
     });

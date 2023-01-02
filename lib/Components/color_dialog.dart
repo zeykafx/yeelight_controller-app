@@ -35,14 +35,18 @@ class _ColorDialogState extends State<ColorDialog> {
       title: const Text("Set brightness and color"),
       content: SingleChildScrollView(
           child: <Widget>[
+        // Colors
         ColorPicker(
           pickerColor: pickerColor,
           onColorChanged: (Color color) => setState(() {
             pickerColor = color;
           }),
           pickerAreaHeightPercent: 0.8,
-        ).padding(bottom: 4),
-        const Divider(thickness: 0.5).padding(bottom: 4),
+        ),
+
+        const Divider(thickness: 0.5).padding(vertical: 8),
+
+        // brightness slider
         Text("Brightness ${brightnessToSet.toStringAsFixed(0)}%"),
         Slider(
             value: brightnessToSet,
@@ -55,6 +59,8 @@ class _ColorDialogState extends State<ColorDialog> {
               });
             }),
       ].toColumn(mainAxisSize: MainAxisSize.min)),
+
+      // action buttons
       actions: [
         TextButton(
             onPressed: () => Navigator.pop(context),

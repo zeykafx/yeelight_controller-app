@@ -89,6 +89,8 @@ class _ColorDialogState extends State<ColorDialog> {
                 duration: const Duration(milliseconds: 200),
               );
 
+              Navigator.pop(context);
+
               // optimistically set the device brightness to provide instant feedback, this will get changed back later if it didn't work.
               widget.yeelightApi.deviceBrightness = brightnessToSet.toInt();
               widget.onStateChanged();
@@ -96,9 +98,8 @@ class _ColorDialogState extends State<ColorDialog> {
               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                   content: Text(
                       "Not connected to a device, unable to change brightness and color")));
+              Navigator.pop(context);
             }
-
-            Navigator.pop(context);
           },
           child: const Text("OK"),
         ),

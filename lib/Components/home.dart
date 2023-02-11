@@ -39,7 +39,7 @@ class _HomeState extends State<Home> {
       ),
       body: Center(
         child: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 2),
+          margin: const EdgeInsets.symmetric(horizontal: 5),
           constraints: const BoxConstraints(maxWidth: 500),
           child: Center(
             child: Column(
@@ -57,23 +57,6 @@ class _HomeState extends State<Home> {
                     crossAxisCount: 3,
                     children: [
                       // Buttons ---
-
-                      // turn on/off button
-                      Card(
-                        color: yeelightApi.devicePower
-                            ? Theme.of(context).colorScheme.secondaryContainer
-                            : null,
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(8),
-                          onTap: () {
-                            yeelightApi.toggleLights();
-                          },
-                          child: Center(
-                              child: Text(yeelightApi.devicePower
-                                  ? "Turn Off"
-                                  : "Turn On")),
-                        ),
-                      ),
 
                       Card(
                         color: yeelightApi.isDeviceFlowing
@@ -98,6 +81,23 @@ class _HomeState extends State<Home> {
                                 ? "Disable Flow"
                                 : "Enable Flow"),
                           ),
+                        ),
+                      ),
+
+                      // turn on/off button
+                      Card(
+                        color: yeelightApi.devicePower
+                            ? Theme.of(context).colorScheme.secondaryContainer
+                            : null,
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(8),
+                          onTap: () {
+                            yeelightApi.toggleLights();
+                          },
+                          child: Center(
+                              child: Text(yeelightApi.devicePower
+                                  ? "Turn Off"
+                                  : "Turn On")),
                         ),
                       ),
 

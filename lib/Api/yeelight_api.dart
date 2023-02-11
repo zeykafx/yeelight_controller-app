@@ -7,7 +7,7 @@ class YeelightApi {
   Device? device;
   bool devicePower = false;
   bool isDeviceFlowing = false;
-  int deviceBrightness = 1;
+  int deviceBrightness = 100;
   late Timer timer;
 
   final void Function() onStateChanged;
@@ -88,8 +88,8 @@ class YeelightApi {
 
   /// starts flow mode on the connected LEDs
   Future<void> startFlow() async {
-    FlowTransition transitionSpeed =
-        const FlowTransition.sleep(duration: Duration(milliseconds: 2000));
+    isDeviceFlowing = true;
+    FlowTransition transitionSpeed = const FlowTransition.sleep(duration: Duration(milliseconds: 2000));
     await device!.startFlow(
       flow: Flow(
         count: 0,
